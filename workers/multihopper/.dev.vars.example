@@ -1,0 +1,8 @@
+# Copy to workers/multihopper/.dev.vars for local live mode.
+# .dev.vars is gitignored. Never commit a real key.
+# Leave the key empty, or set MOCK_MULTIHOPPER=1, to stay on fixtures.
+MOCK_MULTIHOPPER=1
+MULTIHOPPER_API_KEY=
+MULTIHOPPER_WEBHOOK_SECRET=
+# Optional. Any host other than devnet.multihopper.com is rejected.
+# MULTIHOPPER_BASE_URL=https://devnet.multihopper.com/api/v1

@@ -2,7 +2,8 @@
   "name": "vectra",
   "private": true,
   "scripts": {
-    "test": "node --test tests/*.test.cjs",
+    "test": "node --test tests/*.test.cjs tests/*.test.mjs",
+    "routing:dev": "wrangler dev --config workers/multihopper/wrangler.jsonc --port 8787 --ip 127.0.0.1 --var MOCK_MULTIHOPPER:1 --local --show-interactive-dev-session false",
     "test:browser": "node tests/browser.mjs",
     "vendor": "node scripts/vendor-solana.mjs"
   },
@@ -10,6 +11,7 @@
     "@solana/spl-token": "0.4.15",
     "@solana/web3.js": "1.98.4",
     "esbuild": "0.25.11",
-    "puppeteer-core": "24.15.0"
+    "puppeteer-core": "24.15.0",
+    "wrangler": "^4.154.0"
   }
 }

@@ -1,0 +1,15 @@
+{
+  "devnetNote": "Live devnet returns MH_019. These rows are fixtures.",
+  "wallets": [
+    {
+      "address": "3yjTdRnCA8WBJGQtQH92RBzRjK4gHLxX28uijvGhdG1T",
+      "label": "Mock hop wallet A",
+      "category": "other",
+      "canEndRoute": true
+    }
+  ],
+  "bundles": [
+    { "id": "mix", "categories": ["other"], "available": 1 }
+  ],
+  "categories": ["other"]
+}

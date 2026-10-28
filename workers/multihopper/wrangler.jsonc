@@ -1,0 +1,33 @@
+{
+  // Devnet proxy only. Production MultiHopper is rejected in code.
+  // Secrets are not listed here. Set them with `wrangler secret put`:
+  //   MULTIHOPPER_API_KEY
+  //   MULTIHOPPER_WEBHOOK_SECRET
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "vectra-multihopper",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-28",
+  "observability": {
+    "enabled": true,
+    "traces": {
+      "enabled": true
+    }
+  },
+  "vars": {
+    "MOCK_MULTIHOPPER": "0"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "HOPPER",
+        "class_name": "HopperState"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["HopperState"]
+    }
+  ]
+}

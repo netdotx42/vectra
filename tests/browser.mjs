@@ -17,6 +17,26 @@ const server = spawn('python3', ['-m', 'http.server', String(port), '--directory
   stdio: 'ignore',
 });
 
+const routing = spawn('npx', [
+  'wrangler', 'dev',
+  '--config', 'workers/multihopper/wrangler.jsonc',
+  '--port', '8787',
+  '--ip', '127.0.0.1',
+  '--inspector-port', '9241',
+  '--local',
+  '--persist-to', '.wrangler/browser-routing',
+  '--show-interactive-dev-session', 'false',
+  '--log-level', 'error',
+  '--var', 'MOCK_MULTIHOPPER:1',
+], {
+  env: { ...process.env, CI: '1', WRANGLER_SEND_METRICS: 'false' },
+  stdio: ['ignore', 'pipe', 'pipe'],
+  detached: true,
+});
+let routingLog = '';
+routing.stdout.on('data', (chunk) => { routingLog += chunk; });
+routing.stderr.on('data', (chunk) => { routingLog += chunk; });
+
 function waitForServer() {
   return new Promise((resolve, reject) => {
     const started = Date.now();
@@ -30,6 +50,27 @@ function waitForServer() {
       } catch { /* The server is still starting. */ }
       if (Date.now() - started > 8000) reject(new Error('preview server did not start'));
       else setTimeout(tick, 150);
+    };
+    tick();
+  });
+}
+
+function waitForRouting() {
+  return new Promise((resolve, reject) => {
+    const started = Date.now();
+    const tick = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8787/health');
+        if (response.ok) {
+          const body = await response.json();
+          if (body.mode === 'mock') {
+            resolve();
+            return;
+          }
+        }
+      } catch { /* Wrangler is still booting. */ }
+      if (Date.now() - started > 90000) reject(new Error('routing proxy did not start\n' + routingLog.slice(-1500)));
+      else setTimeout(tick, 400);
     };
     tick();
   });
@@ -49,6 +90,7 @@ const browser = await puppeteer.launch({
 
 try {
   await waitForServer();
+  await waitForRouting();
   const page = await browser.newPage();
   await page.setViewport({ width: 1280, height: 900 });
   page.on('pageerror', (error) => note('pageerror: ' + error.message));
@@ -205,11 +247,56 @@ try {
   if (await page.evaluate(() => window.__xss)) throw new Error('xss payload executed from the reference');
   console.log('payout detail:', detail.slice(0, 220));
   await page.evaluate(() => document.querySelector('[data-action="close"]')?.click());
+
+  await page.evaluate(() => {
+    const button = [...document.querySelectorAll('[data-page="Solana routing"]')].find((node) => node.getClientRects().length);
+    if (!button) throw new Error('Solana routing nav was not visible');
+    button.click();
+  });
+  await page.waitForSelector('#routing-root');
+  await page.waitForFunction(() => /Mock/.test(document.getElementById('routing-mode-pill')?.textContent || ''), { timeout: 20000 });
+  const routingCopy = await page.$eval('#routing-root', (node) => node.innerText);
+  if (!/does not make a transfer untraceable/i.test(routingCopy)) throw new Error('routing honesty copy missing');
+  if (/cross-chain/i.test(routingCopy)) throw new Error('routing still says cross-chain');
+  await page.evaluate((address) => {
+    document.querySelector('#route-recipient').value = address;
+    document.querySelector('#route-amount').value = '1';
+  }, donation);
+  await page.click('#route-estimate');
+  await page.waitForFunction(() => /50 basis points/.test(document.body.innerText), { timeout: 15000 });
+  await page.click('#route-create');
+  await page.waitForFunction(() => /Transfer \d+/.test(document.getElementById('routing-status')?.innerText || ''), { timeout: 15000 });
+  await page.click('#route-prepare');
+  await page.waitForFunction(() => /Transactions are ready/.test(document.body.innerText), { timeout: 15000 });
+  const preparedText = await page.$eval('#routing-root', (node) => node.innerText);
+  if (!/not_provided|No sanctions screen/i.test(preparedText)) throw new Error('screening result missing');
+  await page.waitForSelector('#route-broadcast:not([disabled])');
+  await page.click('#route-broadcast');
+  await page.waitForFunction(() => {
+    const text = document.getElementById('routing-root')?.innerText || '';
+    if (/processing/i.test(text)) return true;
+    const error = document.getElementById('routing-error')?.textContent || '';
+    if (error) throw new Error(error);
+    return false;
+  }, { timeout: 20000 });
+  const transferLabel = await page.$eval('#routing-status', (node) => node.innerText.match(/Transfer \d+/)[0]);
+  await page.reload({ waitUntil: 'networkidle0' });
+  await page.evaluate(() => {
+    const button = [...document.querySelectorAll('[data-page="Solana routing"]')].find((node) => node.getClientRects().length);
+    button.click();
+  });
+  await page.waitForFunction((label) => document.body.innerText.includes(label), { timeout: 20000 }, transferLabel);
+
   await page.click('[data-action="connect"]');
   await page.waitForSelector('[data-action="demo-connect"]');
   await page.click('[data-action="demo-connect"]');
   const demoHeader = await page.$eval('header', (node) => node.innerText);
   if (!demoHeader.includes('Demo wallet')) throw new Error('simulated wallet was not labeled: ' + demoHeader);
+  await page.evaluate(() => {
+    const button = [...document.querySelectorAll('[data-page="Overview"]')].find((node) => node.getClientRects().length);
+    button.click();
+  });
+  await page.waitForFunction(() => /Treasury overview/.test(document.querySelector('h1')?.textContent || ''));
   await page.click('[data-action="send"]');
   await page.waitForSelector('#payment-form');
   await page.type('#payment-name', 'Demo payroll');
@@ -250,4 +337,5 @@ try {
 } finally {
   await browser.close();
   server.kill();
+  try { process.kill(-routing.pid, 'SIGKILL'); } catch { routing.kill('SIGKILL'); }
 }
