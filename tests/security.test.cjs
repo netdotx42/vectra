@@ -30,7 +30,7 @@ test('the page CSP allows the vendored library and blocks eval', () => {
 });
 
 test('app source does not call eval or embed a secret key', () => {
-  for (const file of ['dist/app.js', 'dist/core.js', 'dist/chain.js', 'dist/wallet.js']) {
+  for (const file of ['dist/app.js', 'dist/core.js', 'dist/chain.js', 'dist/wallet.js', 'dist/schedule.js', 'dist/scheduler-config.js']) {
     const source = read(file);
     assert.doesNotMatch(source, /\beval\s*\(/);
     assert.doesNotMatch(source, /new Function\s*\(/);

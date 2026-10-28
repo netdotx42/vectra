@@ -32,7 +32,7 @@ The potential advantage is operational: less coordination per payment cycle, a c
 6. Export a CSV. Devnet rows include the signature and a Solana Explorer link. Demo rows are marked fictional.
 7. Open Donate, choose an amount from $1,999 to $100,000, and copy the devnet USDC payment link.
 
-**This repository is a devnet lite client, not a mainnet treasury.** Devnet tokens have no cash value. There is no backend and no custom program. The public devnet RPC can rate-limit. Proposals, schedules, and payout history live in browser localStorage; no scheduler executes them. Local reviews are not signatures. Route previews are not live MultiHopper quotes. Squads is not connected. The donation screen does not sign; on devnet it is a test-mode link. Details and faucet steps are in [docs/DEVNET.md](docs/DEVNET.md).
+**This repository is a devnet lite client, not a mainnet treasury.** Devnet tokens have no cash value. There is no custom program. The optional scheduler Worker never holds a key; with `SCHEDULER_API_URL` unset, schedules stay in this browser and never fire. The public devnet RPC can rate-limit. Proposals and payout history live in browser localStorage. Local reviews are not signatures. Route previews are not live MultiHopper quotes. Squads is not connected. The donation screen does not sign; on devnet it is a test-mode link. Details are in [docs/DEVNET.md](docs/DEVNET.md) and [docs/SCHEDULING.md](docs/SCHEDULING.md).
 
 ## Donate
 
@@ -48,7 +48,7 @@ If `DONATION_ADDRESS` in `dist/core.js` is empty, or it is not a 32-byte base58 
 | --- | --- | --- |
 | Treasury overview | Devnet SOL and devnet USDC when a wallet is connected. Illustrative charts stay labeled. | Mainnet balances |
 | Distributions | Signed devnet USDC payouts: validation, ATA creation, simulation, batching, explorer links | Mainnet sends and scheduled execution |
-| Scheduling | Browser-local schedule records | Durable jobs that prepare proposals, with duplicate prevention |
+| Scheduling | Optional Worker prepares due devnet runs for a wallet signature. Empty `SCHEDULER_API_URL` keeps a local-only fallback that never fires. | Mainnet schedules and any send that does not ask the wallet |
 | Approvals | Local proposal review | Squads proposals |
 | Routing | Simulated route review | Verified MultiHopper quotes, costs, execution, and status |
 | Records | localStorage signatures, CSV export, devnet Explorer links | Durable audit records |
@@ -93,6 +93,8 @@ dist/vendor/          Pinned @solana/web3.js browser build and its license
 dist/.nojekyll        Skips Jekyll so Pages serves the files as they are
 dist/404.html         Sends unknown Pages paths back to the demo
 docs/DEVNET.md        Devnet setup, faucets, and limitations
+docs/SCHEDULING.md    Non-custodial schedule Worker, auth, and deploy
+workers/scheduler/    Cloudflare Worker, cron, and one Durable Object per wallet
 docs/LITEPAPER.md     Product thesis and proposed architecture
 DESCRIPTION.txt       Copy-ready 344-character description
 wrangler.jsonc        Cloudflare Workers static asset configuration

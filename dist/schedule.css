@@ -1,0 +1,10 @@
+.scheduler-note{margin:0 0 14px}
+.scheduler-grid{display:grid;gap:16px}
+.run-card{padding:16px 18px;border-top:1px solid var(--line)}
+.run-card:first-child{border-top:0}
+.run-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.run-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.scheduler-empty{padding:8px 0 4px;color:var(--muted)}
+.inbox-item{padding:12px 0;border-top:1px solid var(--line)}
+.inbox-item:first-child{border-top:0}
+.inbox-item.read{opacity:.72}

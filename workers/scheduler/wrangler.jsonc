@@ -1,0 +1,33 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "vectra-scheduler",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-28",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+    "traces": {
+      "enabled": true
+    }
+  },
+  "workers_dev": true,
+  "triggers": {
+    "crons": ["* * * * *"]
+  },
+  "vars": {
+    "GRACE_PERIOD_MS": "86400000",
+    "NETWORK": "devnet"
+  },
+  "durable_objects": {
+    "bindings": [
+      { "name": "WALLET_SCHEDULER", "class_name": "WalletScheduler" },
+      { "name": "SCHEDULER_DIRECTORY", "class_name": "SchedulerDirectory" }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["WalletScheduler", "SchedulerDirectory"]
+    }
+  ]
+}
