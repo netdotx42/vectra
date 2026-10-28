@@ -4,5 +4,5 @@
  * Example: https://vectra-scheduler.<account>.workers.dev
  */
 (function () {
-  if (typeof globalThis.SCHEDULER_API_URL !== 'string') globalThis.SCHEDULER_API_URL = '';
+  if (typeof globalThis.SCHEDULER_API_URL !== 'string') globalThis.SCHEDULER_API_URL = 'https://vectra-scheduler.vectra-ops.workers.dev';
 })();

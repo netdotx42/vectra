@@ -96,7 +96,7 @@ try {
   const plain = await browser.newPage();
   await plain.goto('http://127.0.0.1:' + pagePort + '/', { waitUntil: 'networkidle0', timeout: 30000 });
   await plain.click('[data-page="Distributions"]');
-  await plain.waitForFunction(() => document.body.innerText.includes('Local-only fallback'));
+  await plain.waitForFunction(() => document.body.innerText.includes('Scheduler mode'));
   await plain.close();
 
   const page = await browser.newPage();
