@@ -6,7 +6,7 @@ Running a treasury should feel calmer than the market around it.
 
 VECTRA is building a non-custodial operations workspace for Solana treasury teams: a place to plan USDC payouts, coordinate approvals, and review treasury movement from intent to settlement. The idea is straightforward: automate the preparation, keep the authority with the people responsible for the funds.
 
-**[Explore the demo](https://vectra-treasury.vxidos119.workers.dev/) · [Brand and market plan](https://vectra-treasury.vxidos119.workers.dev/brand.html) · [Litepaper](docs/LITEPAPER.md)**
+**[Explore the demo](https://vectra-treasury.vxidos119.workers.dev/) · [GitHub Pages](https://netdotx42.github.io/vectra/) · [Brand and market plan](https://vectra-treasury.vxidos119.workers.dev/brand.html) · [Litepaper](docs/LITEPAPER.md)**
 
 ## The short version
 
@@ -29,8 +29,17 @@ The potential advantage is operational: less coordination per payment cycle, a c
 3. Add a one-time, weekly, or monthly demo schedule.
 4. Preview a cross-chain route and save a draft proposal.
 5. Review proposals and export a CSV report.
+6. Open Donate, choose an amount, and copy the USDC payment link.
 
-**This repository contains an interactive prototype.** Balances, historical transactions, and volume are fictional. Wallet connection is simulated. Proposals and schedules are stored in browser localStorage; no scheduler executes them. Local reviews are not signatures. Route previews are not live MultiHopper quotes or completed transfers. Activity records are not a verifiable on-chain audit trail.
+**This repository contains an interactive prototype.** Balances, historical transactions, and volume are fictional. Wallet connection is simulated. Proposals and schedules are stored in browser localStorage; no scheduler executes them. Local reviews are not signatures. Route previews are not live MultiHopper quotes or completed transfers. Activity records are not a verifiable on-chain audit trail. The donation screen does not spend that illustrative balance.
+
+## Donate
+
+**Donate** is in the header and the sidebar. **Support Vectra** is on the overview. Amounts run from $1,999 to $100,000.
+
+The recipient address is `Efhs2ifAwJKUYcVGXvTj3F8z17pGvDRMSxQrDZzjmizR`. The confirm step shows that address with a copy button and a Solana Pay link (`solana:…?amount=…&spl-token=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v&label=Vectra`). You send USDC (SPL) on Solana from your own wallet. The site never signs, never moves funds, and cannot confirm receipt.
+
+If `DONATION_ADDRESS` in `dist/app.js` is empty, or it is not a 32–44 character base58 address, the same screen stays in demo mode. You can confirm an amount and see a simulated success note that says no funds moved. Real donations are enabled once a Solana address is configured. The simulated treasury wallet, balances, and proposals stay labeled as a prototype either way.
 
 ## What works today and what comes next
 
@@ -67,13 +76,18 @@ python3 -m http.server 8080 --directory dist
 
 Open http://localhost:8080. The interface uses Google Fonts when available and falls back to local fonts. Reset local proposals and schedules from Settings.
 
+GitHub Pages publishes `dist/` from `.github/workflows/pages.yml` on every push to `main`. Links to CSS, scripts, and icons are relative, so the same files load at `https://netdotx42.github.io/vectra/` and at a domain root.
+
 ## Project layout
 
 ```text
 dist/                 Editable static app and brand assets
+dist/.nojekyll        Skips Jekyll so Pages serves the files as they are
+dist/404.html         Sends unknown Pages paths back to the demo
 docs/LITEPAPER.md     Product thesis and proposed architecture
 DESCRIPTION.txt       Copy-ready 344-character description
 wrangler.jsonc        Cloudflare Workers static asset configuration
+.github/workflows/pages.yml  Publishes dist/ to GitHub Pages
 ```
 
 The existing demo is hosted on Cloudflare Workers. To deploy from this source using an authenticated Wrangler installation:

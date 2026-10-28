@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found · VECTRA</title>
+<meta name="theme-color" content="#082d23">
+<link rel="icon" href="favicon.svg">
+<style>
+  body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f5f8f3;color:#16392c;font:15px/1.5 "Segoe UI",sans-serif}
+  main{width:min(440px,calc(100% - 40px));padding:8px 0 32px}
+  .mark{font:800 13px/1 Manrope,"Segoe UI",sans-serif;letter-spacing:2px;color:#185d3d}
+  h1{font:650 32px/1.15 Manrope,"Segoe UI",sans-serif;letter-spacing:-.8px;margin:14px 0 10px}
+  p{margin:0 0 18px;color:#5c7268}
+  a{display:inline-flex;background:#185d3d;color:#fff;text-decoration:none;border-radius:6px;padding:10px 14px;font-weight:650}
+</style>
+</head>
+<body>
+<main>
+  <div class="mark">VECTRA</div>
+  <h1>That page isn’t here.</h1>
+  <p>This is a static demo. The treasury workspace is on the home page. Nothing was moved or signed.</p>
+  <a id="home" href="index.html">Back to Vectra</a>
+</main>
+<script>
+(function () {
+  var path = location.pathname;
+  var base = '/';
+  if (path === '/vectra' || path.indexOf('/vectra/') === 0) base = '/vectra/';
+  else if (/\/404\.html$/.test(path)) base = path.replace(/404\.html$/, '') || '/';
+  var home = document.getElementById('home');
+  if (home) home.setAttribute('href', base);
+  var missing = !/\/404\.html$/.test(path) && path !== base && path !== base.replace(/\/$/, '');
+  if (missing) location.replace(base);
+})();
+</script>
+</body>
+</html>
