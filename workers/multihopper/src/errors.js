@@ -90,11 +90,14 @@ export function fail(code, detail) {
   return new HopperError(code, status, message, detail || '');
 }
 
-export function redact(value) {
+export function redactSecrets(value) {
   return String(value || '')
     .replace(/mh_(test|live)_[A-Za-z0-9._-]+/gi, '[redacted]')
-    .replace(/whsec_[A-Za-z0-9._-]+/gi, '[redacted]')
-    .slice(0, 500);
+    .replace(/whsec_[A-Za-z0-9._-]+/gi, '[redacted]');
+}
+
+export function redact(value) {
+  return redactSecrets(value).slice(0, 500);
 }
 
 export function friendlyCode(code) {

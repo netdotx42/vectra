@@ -65,7 +65,7 @@ Saved route templates, reward claims, and any other path are not proxied. The to
 | `mh_test_…` key from the devnet dashboard, and mock is not forced | Live devnet. |
 | `mh_live_…` or a base URL other than `https://devnet.multihopper.com/api/v1` | Rejected. |
 
-Mock responses are labeled `"mode": "mock"`. They are fixtures. They are not sanctions decisions and they are not broadcast. The well-known mock webhook secret, used only when no real secret is set and the Worker is in mock mode, is `whsec_mock_vectra_devnet`.
+Mock responses are labeled `"mode": "mock"`. They are fixtures. They are not sanctions decisions and they are not broadcast. Webhooks are rejected until `MULTIHOPPER_WEBHOOK_SECRET` is set with `wrangler secret put`. There is no built-in secret.
 
 Live devnet does not serve the hop library (`MH_019`). Custom routes on devnet use wallets you enter. The mock library response says that.
 

@@ -242,6 +242,8 @@ const VectraRouting = (function () {
         body,
       });
     } catch {
+      model.pending[actionName] = false;
+      save();
       throw new Error('The routing proxy is not reachable at ' + base + '. For local mock mode run npm run routing:dev.');
     }
     const data = await response.json().catch(() => ({}));
@@ -444,19 +446,28 @@ const VectraRouting = (function () {
     return core().base58Encode(bytes);
   }
 
+  async function signLocally(encoded, label) {
+    const features = ctx.state.wallet && ctx.state.wallet.features;
+    const signer = features && features['solana:signTransaction'];
+    if (signer && signer.signTransaction) {
+      const tx = deserialize(txBytes(encoded));
+      await VectraWallet.sign(ctx.state.wallet, ctx.state.account, tx);
+    }
+    const signature = await mockSignature(label + ':' + model.transferId);
+    note(label + ' signed locally. Mock mode did not broadcast it.');
+    return signature;
+  }
+
   async function signAndSend(encoded, label, height) {
+    if (model.mode !== 'live') return signLocally(encoded, label);
     const bytes = txBytes(encoded);
     const tx = deserialize(bytes);
     const signed = await VectraWallet.sign(ctx.state.wallet, ctx.state.account, tx);
-    if (model.mode === 'mock') {
-      const signature = signed.mode === 'sent' && signed.signature
-        ? signed.signature
-        : await mockSignature(label + ':' + model.transferId + ':' + core().bytesToBase64(signed.raw || bytes));
-      note(label + ' signed locally. Mock mode did not broadcast it.');
-      return signature;
+    if (signed.mode === 'sent') {
+      note(label + ' was sent by the wallet.');
+      return signed.signature;
     }
-    let signature = signed.mode === 'sent' ? signed.signature : '';
-    if (!signature) signature = await VectraChain.sendRaw(signed.raw);
+    const signature = await VectraChain.sendRaw(signed.raw);
     await VectraChain.confirm(signature, height);
     note(label + ' confirmed on devnet.');
     return signature;
@@ -471,13 +482,16 @@ const VectraRouting = (function () {
     model.signatures.sessionInitSignatures = model.signatures.sessionInitSignatures || [];
     model.signatures.dispersionInitSignatures = model.signatures.dispersionInitSignatures || [];
     if (prepared.keeperFundingTx && !model.signatures.keeperFundingSignature) {
-      const signature = await signAndSend(prepared.keeperFundingTx, 'Keeper funding', height);
-      model.signatures.keeperFundingSignature = signature;
+      model.signatures.keeperFundingSignature = await signAndSend(prepared.keeperFundingTx, 'Keeper funding', height);
       save();
+    }
+    if (model.signatures.keeperFundingSignature && !model.signatures.keeperRecorded) {
       await post('/v1/transfers/' + model.transferId + '/confirm-broadcast', {
         routeInitSignatures: [],
-        keeperFundingSignature: signature,
+        keeperFundingSignature: model.signatures.keeperFundingSignature,
       }, 'confirm-keeper');
+      model.signatures.keeperRecorded = true;
+      save();
       note('Keeper funding signature recorded.');
     }
     const routeTxs = Array.isArray(prepared.routeInitTxs) ? prepared.routeInitTxs : [];

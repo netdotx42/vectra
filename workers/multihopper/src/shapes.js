@@ -1,3 +1,5 @@
+import { redactSecrets } from './errors.js';
+
 const ESTIMATE_KEYS = [
   'tier', 'tierIndex', 'percentFeeBps', 'percentFeeRaw', 'flatFeeLamportsPerHop',
   'flatFeeLamportsPerRoute', 'totalFlatFeeLamports', 'integratorPercentShare',
@@ -24,7 +26,7 @@ function pick(source, keys) {
 export function screeningOf(value) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
   const status = typeof value.status === 'string' ? value.status.slice(0, 80) : '';
-  const message = typeof (value.message || value.summary) === 'string' ? String(value.message || value.summary).slice(0, 400) : '';
+  const message = typeof (value.message || value.summary) === 'string' ? redactSecrets(String(value.message || value.summary).slice(0, 400)) : '';
   if (!status && !message) return null;
   return { status, message };
 }
@@ -84,7 +86,7 @@ export function normalizeTransfer(payload) {
     status: source.status || null,
     phase: source.phase || null,
     progress: source.progress || null,
-    lastError: source.lastError || null,
+    lastError: source.lastError == null || source.lastError === '' ? null : redactSecrets(source.lastError).slice(0, 500),
     isTest: source.isTest == null ? null : source.isTest,
     quotedAt: source.quotedAt || null,
     expiresAt: source.expiresAt || null,

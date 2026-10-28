@@ -323,7 +323,7 @@ async function handleLibrary(request, env, mode, url) {
 
 async function handleWebhook(request, env, mode) {
   await limit(env, request, 'webhook');
-  const secret = webhookSecret(env, mode.mode);
+  const secret = webhookSecret(env);
   if (!secret) throw fail('MH_091', 'The webhook secret is not configured.');
   const raw = new Uint8Array(await request.arrayBuffer());
   if (raw.byteLength > 32768) throw fail('BAD_REQUEST', 'Webhook body is too large.');

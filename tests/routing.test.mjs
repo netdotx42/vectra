@@ -183,6 +183,8 @@ test('error codes map to friendly text and production stays locked', () => {
   assert.equal(resolveMode({}).mode, 'mock');
   assert.equal(resolveMode({ MULTIHOPPER_API_KEY: 'mh_test_example' }).mode, 'live');
   assert.throws(() => resolveMode({ MULTIHOPPER_API_KEY: 'mh_live_example' }), (error) => error.code === 'MH_003');
+  assert.throws(() => resolveMode({ MULTIHOPPER_API_KEY: 'MH_LIVE_example' }), (error) => error.code === 'MH_003');
+  assert.throws(() => validateEstimate({ amountRaw: 1000000, hops: 3, arrivalSeconds: 300 }), (error) => error.code === 'MH_012');
   assert.equal(resolveUpstream({}), DEVNET_API_BASE);
   assert.throws(() => resolveUpstream({ MULTIHOPPER_BASE_URL: 'https://multihopper.com/api/v1' }), (error) => error.code === 'MH_003');
   assert.throws(() => resolveUpstream({ MULTIHOPPER_BASE_URL: 'http://devnet.multihopper.com/api/v1' }), (error) => error.code === 'MH_003');
@@ -232,6 +234,7 @@ test('mock proxy covers estimate, idempotency, signing flow, webhook, and rate l
     '--log-level', 'error',
     '--var', 'MOCK_MULTIHOPPER:1',
     '--var', 'MULTIHOPPER_API_KEY:mh_test_not_a_real_key',
+    '--var', 'MULTIHOPPER_WEBHOOK_SECRET:whsec_test_only',
   ], {
     cwd: root,
     env: { ...process.env, CI: '1', WRANGLER_SEND_METRICS: 'false' },
@@ -339,7 +342,7 @@ test('mock proxy covers estimate, idempotency, signing flow, webhook, and rate l
   }, crypto.randomUUID());
   assert.equal(finalConfirm.data.transfer.status, 'processing');
 
-  const secret = 'whsec_mock_vectra_devnet';
+  const secret = 'whsec_test_only';
   const event = {
     id: 'evt-test-1',
     type: 'transfer.hop_complete',

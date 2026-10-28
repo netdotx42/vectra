@@ -8,13 +8,11 @@ const DENIED_HOSTS = new Set([
   'api.multihopper.com',
 ]);
 
-export const MOCK_WEBHOOK_SECRET = 'whsec_mock_vectra_devnet';
-
 export function resolveMode(env) {
   const forceMock = String(env.MOCK_MULTIHOPPER || '') === '1';
-  const key = String(env.MULTIHOPPER_API_KEY || '').trim();
+  const key = String(env.MULTIHOPPER_API_KEY || '').replace(/^\uFEFF/, '').trim();
   if (forceMock || !key) return { mode: 'mock', key: '' };
-  if (key.startsWith('mh_live_')) {
+  if (/^mh_live_/i.test(key)) {
     throw fail('MH_003', 'An mh_live_ key belongs to production. This Worker will not use it.');
   }
   return { mode: 'live', key };
@@ -38,9 +36,6 @@ export function resolveUpstream(env) {
   return DEVNET_API_BASE;
 }
 
-export function webhookSecret(env, mode) {
-  const secret = String(env.MULTIHOPPER_WEBHOOK_SECRET || '').trim();
-  if (secret) return secret;
-  if (mode === 'mock') return MOCK_WEBHOOK_SECRET;
-  return '';
+export function webhookSecret(env) {
+  return String(env.MULTIHOPPER_WEBHOOK_SECRET || '').trim();
 }

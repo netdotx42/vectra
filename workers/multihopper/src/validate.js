@@ -42,7 +42,8 @@ function objectBody(body) {
 }
 
 function rawAmount(value, label) {
-  const text = String(value ?? '').trim();
+  if (typeof value !== 'string') throw fail('MH_012', label + ' must be a string of base units.');
+  const text = value.trim();
   if (!/^[0-9]+$/.test(text)) throw fail('MH_012', label + ' must be a positive whole number of base units.');
   let amount;
   try {
