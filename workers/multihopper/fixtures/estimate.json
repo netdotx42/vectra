@@ -1,0 +1,41 @@
+{
+  "tier": "mock",
+  "tierIndex": 0,
+  "percentFeeBps": 50,
+  "percentFeeRaw": "5000",
+  "flatFeeLamportsPerHop": 5000,
+  "flatFeeLamportsPerRoute": 0,
+  "totalFlatFeeLamports": 15000,
+  "integratorPercentShare": "2500",
+  "integratorFlatShare": 0,
+  "usdEquivalent": null,
+  "usdValueMicros": null,
+  "priceSource": "mock",
+  "hopAmountRaw": "995000",
+  "cappedAtTierBoundary": false,
+  "destinationCount": null,
+  "isTestMode": true,
+  "tokens": {
+    "amountRaw": "1000000",
+    "feeRaw": "5000",
+    "netDeliveredRaw": "995000",
+    "decimals": 6
+  },
+  "sol": {
+    "requiredSolUpFrontLamports": 21117840,
+    "minTransferAmountLamports": 2039280,
+    "breakdown": {
+      "routeInitRentLamports": 6117840,
+      "orchestratorRentLamports": 1000000,
+      "ataRentLamports": 2039280,
+      "transactionFeesLamports": 50000,
+      "priorityFeesLamports": 0,
+      "protocolFlatFeeLamports": 15000,
+      "screeningFeeLamports": 0,
+      "dispersionRentLamports": 0
+    },
+    "refundableLamports": 1000000,
+    "netCostLamports": 14015000
+  },
+  "route": { "hopCount": 3, "arrivalSeconds": 300 }
+}

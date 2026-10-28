@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- Scheduler origin is allowlisted. The routing proxy is not deployed; do not add a routing host here until that origin exists. -->
+<!-- Routing Worker is not deployed. Leave the proxy meta empty. Local mock mode is used only when this page is served from localhost. -->
+<meta name="vectra-routing-proxy" content="">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; form-action 'none'; object-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://api.devnet.solana.com https://vectra-scheduler.vectra-ops.workers.dev http://127.0.0.1:8787 http://localhost:8787">
 <title>VECTRA — Treasury, in motion.</title>
 <meta name="theme-color" content="#082d23">
@@ -11,6 +12,7 @@
 <meta name="description" content="VECTRA Treasury. Plan distributions, review devnet USDC payouts, and coordinate treasury movement on Solana. Devnet lite. Mainnet is locked.">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="schedule.css">
+<link rel="stylesheet" href="routing.css">
 </head>
 <body>
 <div id="app"></div>
@@ -22,6 +24,7 @@
 <script src="wallet.js"></script>
 <script src="scheduler-config.js"></script>
 <script src="schedule.js"></script>
+<script src="routing.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

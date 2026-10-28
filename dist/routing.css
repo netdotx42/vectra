@@ -1,0 +1,17 @@
+.route-banner,.route-mock,.route-live{border-radius:8px;padding:12px 14px;margin:0 0 14px;line-height:1.55}
+.route-banner{background:#e7f5ee;color:#174536}
+.route-mock{background:#faf5e8;color:#6d5420}
+.route-live{background:#e5f6ea;color:#14543a}
+.hop-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.hop{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:#fff}
+.hop strong{display:block}
+.hop small,.route-note{display:block;color:var(--muted);line-height:1.45}
+.routing-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.routing-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+.choice-row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+.choice-row button[aria-pressed="true"]{background:#17382c;color:#f3fff6}
+.hop-editor{display:grid;grid-template-columns:1.4fr .6fr auto;gap:8px;margin-bottom:8px}
+#routing-error:empty{display:none}
+@media(max-width:800px){
+  .routing-grid,.hop-editor{grid-template-columns:1fr}
+}

@@ -3,7 +3,7 @@
 Treasury, in motion.  
 Litepaper · Working draft v0.1
 
-VECTRA is building a non-custodial treasury operations workspace for Solana-native organizations. Its initial focus is practical: plan USDC distributions, coordinate approvals, fund operational wallets, and review devnet USDC payouts. It does not take custody of funds.
+VECTRA is building a non-custodial treasury operations workspace for Solana-native organizations. Its initial focus is practical: plan USDC distributions, coordinate approvals, fund operational wallets, and review devnet Solana transfers. It does not take custody of funds.
 
 The principle is simple: **automate preparation while preserving control over execution.**
 
@@ -22,7 +22,7 @@ The proposed MVP connects four functions:
 - **Treasury visibility:** balances, available funds, scheduled obligations, and transaction history.
 - **USDC distributions:** one-time and recurring payment proposals for multiple recipients.
 - **Approval coordination:** clear proposal states and authorized wallet-controlled execution, with Squads integration planned.
-- **Routing:** not in this build. A later devnet route would stay on Solana, show costs before signing, and leave the key in the operator's wallet.
+- **Solana routing:** a devnet MultiHopper integration for timed USDC hops. Every hop is a public Solana transfer. It does not make a payment untraceable, and it is not a bridge. Production use still needs written partner terms.
 
 Each movement should answer four questions: **What is being sent? Who authorized it? What did it cost? Did it settle?**
 
@@ -50,8 +50,8 @@ Early success should be measured through proposal preparation time, approval tur
 
 ## Current status and next milestones
 
-VECTRA Lite can connect Phantom, Solflare, or Backpack, read devnet SOL and devnet USDC, and ask that wallet to sign a simulated-then-sent USDC payout. Mainnet is locked. Schedules, Squads approvals, and MultiHopper routing are still local previews. Devnet tokens have no cash value. See `docs/DEVNET.md`.
+VECTRA Lite can connect Phantom, Solflare, or Backpack, read devnet SOL and devnet USDC, and ask that wallet to sign a simulated-then-sent USDC payout. A scheduler Worker can prepare a due devnet run, and the wallet still has to sign it. It can also prepare a devnet hop route through a Worker proxy that never sees a private key. Mainnet is locked. Squads approvals are still a local preview. Devnet tokens have no cash value. See `docs/DEVNET.md`, `docs/SCHEDULING.md`, and `docs/ROUTING.md`.
 
-The next milestones are durable scheduling and audit records, an approval-to-settlement workflow, and a verified devnet route that stays on Solana.
+The next milestones are an approval-to-settlement workflow and written partner terms before any production Solana route.
 
 **VECTRA's ambition is to make treasury movement easier to coordinate, authorize, and verify, while keeping authority with the team responsible for the funds.**
