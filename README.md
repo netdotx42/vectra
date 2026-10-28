@@ -10,7 +10,7 @@ VECTRA is building a non-custodial operations workspace for Solana treasury team
 
 ## The short version
 
-VECTRA is building the operations layer for Solana treasuries. Plan USDC payouts, coordinate approvals, and explore cross-chain routing in a clear workspace. Our non-custodial approach keeps signing authority with treasury teams. This interactive demo previews the workflow; live wallet, Squads, and MultiHopper integrations are on the roadmap.
+VECTRA is building the operations layer for Solana treasuries. Plan USDC payouts, coordinate approvals, and explore Solana-only routing in a clear workspace. Our non-custodial approach keeps signing authority with treasury teams. This interactive demo previews the workflow; live wallet, Squads, and MultiHopper integrations are on the roadmap.
 
 *Description above: exactly 344 characters, including spaces and punctuation.*
 
@@ -18,7 +18,7 @@ VECTRA is building the operations layer for Solana treasuries. Plan USDC payouts
 
 A payment starts well before someone signs a transaction. Teams need to maintain recipients, plan obligations, chase approvals, check costs, and reconcile what landed. Those steps often spill into spreadsheets and chat threads.
 
-Our thesis: the recurring payment cycle is a useful place to earn a treasury team's trust. Start with scheduled USDC distributions and one reliable cross-chain routing workflow. Make the handoffs clear, then expand when repeat use supports it.
+Our thesis: the recurring payment cycle is a useful place to earn a treasury team's trust. Start with scheduled USDC distributions and one reliable Solana payout workflow. Make the handoffs clear, then expand when repeat use supports it.
 
 The potential advantage is operational: less coordination per payment cycle, a clearer view of obligations, and evidence that connects each proposal to its authorization and settlement. That remains a product thesis to validate with operators.
 
@@ -28,7 +28,7 @@ The potential advantage is operational: less coordination per payment cycle, a c
 2. Read devnet SOL and devnet USDC. Those balances have no cash value. Mainnet stays locked.
 3. Review a multi-recipient devnet USDC payout. The page simulates it before your wallet asks for a signature.
 4. Add a one-time, weekly, or monthly demo schedule. Schedules stay in this browser and do not send.
-5. Preview a cross-chain route and save a draft proposal. Routing is still a simulation.
+5. Open the routing preview. It is a labeled demo, it does not send funds, and it is not a bridge.
 6. Export a CSV. Devnet rows include the signature and a Solana Explorer link. Demo rows are marked fictional.
 7. Open Donate, choose an amount from $1,999 to $100,000, and copy the devnet USDC payment link.
 

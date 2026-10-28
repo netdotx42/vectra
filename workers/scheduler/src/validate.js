@@ -32,9 +32,11 @@ function parseAmount(raw) {
   } catch {
     return { ok: false, error: 'Enter a positive amount, like 12.5.' };
   }
-  if (amount <= 0n || amount > 18446744073709551615n) return { ok: false, error: 'That amount is too large for one transfer.' };
-  const display = fraction ? String(BigInt(whole)) + '.' + padded.replace(/0+$/, '') : String(BigInt(whole));
-  return { ok: true, amount: display === '' ? '0' : display };
+  if (amount <= 0n) return { ok: false, error: 'Enter an amount greater than zero.' };
+  if (amount > 18446744073709551615n) return { ok: false, error: 'That amount is too large for one transfer.' };
+  const fracText = padded.replace(/0+$/, '');
+  const display = fracText ? String(BigInt(whole)) + '.' + fracText : String(BigInt(whole));
+  return { ok: true, amount: display };
 }
 
 function clock(input) {

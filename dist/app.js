@@ -80,11 +80,11 @@ function persistDemo() {
 function persistPayouts() {
   localStorage.setItem('vectra-payouts', JSON.stringify(state.payouts.slice(0, 100)));
 }
-const navs = [['Overview', 'grid'], ['Wallets & assets', 'wallet'], ['Distributions', 'calendar'], ['Cross-chain routing', 'route'], ['Approvals', 'shield'], ['Activity log', 'history']];
+const navs = [['Overview', 'grid'], ['Wallets & assets', 'wallet'], ['Distributions', 'calendar'], ['Routing preview', 'route'], ['Approvals', 'shield'], ['Activity log', 'history']];
 const initialTx = [
   { name: 'Monthly contributor payout', sub: 'Distribution · 12 recipients', amount: '− $18,000.00', status: 'Completed', date: 'Oct 21, 2026', icon: 'send' },
   { name: 'Treasury funding', sub: 'Deposit · USDC', amount: '+ $50,000.00', status: 'Completed', date: 'Oct 20, 2026', icon: 'arrowDown' },
-  { name: 'Solana → Ethereum', sub: 'Routing · MultiHopper simulation', amount: '− $25,000.00', status: 'Draft', date: 'Oct 19, 2026', icon: 'route' },
+  { name: 'Route preview', sub: 'Illustrative · not sent · devnet demo', amount: '− $25,000.00', status: 'Draft', date: 'Oct 19, 2026', icon: 'route' },
   { name: 'Operations wallet top-up', sub: 'Transfer · USDC', amount: '− $2,500.00', status: 'Completed', date: 'Oct 18, 2026', icon: 'send' },
 ];
 const initialSchedules = [
@@ -148,7 +148,7 @@ function faucetLinks() {
 }
 function shell() {
   const pending = state.proposals.filter((item) => item.status === 'Pending approval').length + 2;
-  return `<aside><div class="brand"><svg class="logo vectra-mark" width="31" height="31" viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M3 7 17.5 31 32 7H25L17.5 20 10 7Z" fill="currentColor"/><path d="m16 7 4 7 4-7" stroke="currentColor" stroke-width="2.5"/><circle cx="31" cy="29" r="2" fill="currentColor"/></svg><span class="word">VECTRA<small>TREASURY OPERATIONS</small></span></div><div class="workspace"><span class="avatar workspace-monogram">V/</span><div>${state.walletMode === 'live' ? 'Devnet wallet' : 'Demo treasury'}<small>${state.walletMode === 'live' ? esc(shortAddress(state.publicKey)) : 'Solana workspace'}</small></div>${icon('down', 12)}</div><div class="nav-label">WORKSPACE</div><nav class="nav">${navs.map(([name, glyph]) => `<button type="button" data-page="${name}" class="${state.page === name ? 'active' : ''}">${icon(glyph)}<span>${name}</span>${name === 'Approvals' ? `<b class="badge">${pending}</b>` : ''}</button>`).join('')}</nav><div class="sidebar-bottom"><nav class="nav"><button type="button" data-action="donate">${icon('heart')}<span>Donate</span></button><button type="button" data-page="Settings">${icon('settings')}<span>Settings</span></button><button type="button" data-page="Help & roadmap">${icon('help')}<span>Help & roadmap</span></button></nav><div class="safe">${icon('shield', 16)} &nbsp; Capital in motion.<br>Control by design.<p>Plan. Approve. Move.<br>Every step, accountable.</p></div><div class="profile"><span class="avatar">VT</span><div style="font-size:11px;color:#dce9de">Treasury team<br><small>Workspace admin</small></div><span style="margin-left:auto">${icon('down', 12)}</span></div></div></aside><main><header><div class="crumb">Workspace <span>/</span> <strong>${esc(state.page)}</strong></div><div class="mobile-brand">VECTRA<span>/</span></div><div class="header-actions"><button type="button" class="network" data-action="network"><i class="dot"></i> Solana Devnet ${icon('down', 11)}</button><button type="button" class="icon-btn" data-action="notifications" aria-label="Notifications">${icon('bell', 18)}</button><button type="button" class="btn donate" data-action="donate" title="Support Vectra">Donate</button><button type="button" class="btn" data-action="connect">${icon('wallet')} ${connectLabel()}</button></div></header><div class="content" id="content"></div></main><nav class="mobile-nav">${navs.slice(0, 5).map(([name, glyph]) => `<button type="button" data-page="${name}" class="${state.page === name ? 'active' : ''}">${icon(glyph)}${name === 'Wallets & assets' ? 'Assets' : name === 'Cross-chain routing' ? 'Routing' : name}</button>`).join('')}</nav>`;
+  return `<aside><div class="brand"><svg class="logo vectra-mark" width="31" height="31" viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M3 7 17.5 31 32 7H25L17.5 20 10 7Z" fill="currentColor"/><path d="m16 7 4 7 4-7" stroke="currentColor" stroke-width="2.5"/><circle cx="31" cy="29" r="2" fill="currentColor"/></svg><span class="word">VECTRA<small>TREASURY OPERATIONS</small></span></div><div class="workspace"><span class="avatar workspace-monogram">V/</span><div>${state.walletMode === 'live' ? 'Devnet wallet' : 'Demo treasury'}<small>${state.walletMode === 'live' ? esc(shortAddress(state.publicKey)) : 'Solana workspace'}</small></div>${icon('down', 12)}</div><div class="nav-label">WORKSPACE</div><nav class="nav">${navs.map(([name, glyph]) => `<button type="button" data-page="${name}" class="${state.page === name ? 'active' : ''}">${icon(glyph)}<span>${name}</span>${name === 'Approvals' ? `<b class="badge">${pending}</b>` : ''}</button>`).join('')}</nav><div class="sidebar-bottom"><nav class="nav"><button type="button" data-action="donate">${icon('heart')}<span>Donate</span></button><button type="button" data-page="Settings">${icon('settings')}<span>Settings</span></button><button type="button" data-page="Help & roadmap">${icon('help')}<span>Help & roadmap</span></button></nav><div class="safe">${icon('shield', 16)} &nbsp; Capital in motion.<br>Control by design.<p>Plan. Approve. Move.<br>Every step, accountable.</p></div><div class="profile"><span class="avatar">VT</span><div style="font-size:11px;color:#dce9de">Treasury team<br><small>Workspace admin</small></div><span style="margin-left:auto">${icon('down', 12)}</span></div></div></aside><main><header><div class="crumb">Workspace <span>/</span> <strong>${esc(state.page)}</strong></div><div class="mobile-brand">VECTRA<span>/</span></div><div class="header-actions"><button type="button" class="network" data-action="network"><i class="dot"></i> Solana Devnet ${icon('down', 11)}</button><button type="button" class="icon-btn" data-action="notifications" aria-label="Notifications">${icon('bell', 18)}</button><button type="button" class="btn donate" data-action="donate" title="Support Vectra">Donate</button><button type="button" class="btn" data-action="connect">${icon('wallet')} ${connectLabel()}</button></div></header><div class="content" id="content"></div></main><nav class="mobile-nav">${navs.slice(0, 5).map(([name, glyph]) => `<button type="button" data-page="${name}" class="${state.page === name ? 'active' : ''}">${icon(glyph)}${name === 'Wallets & assets' ? 'Assets' : name === 'Routing preview' ? 'Routing' : name}</button>`).join('')}</nav>`;
 }
 function pageHeading(title, subtitle, actions = '') {
   return `<div class="page-heading"><div><h1>${title}</h1><p>${subtitle}</p></div><div class="heading-actions">${actions}</div></div>`;
@@ -219,7 +219,7 @@ function overview() {
   return pageHeading('Treasury overview', 'A calm look at balances, payouts, and what is waiting on a signature.', `<button type="button" class="btn" data-action="export">${icon('download')} Export report</button><button type="button" class="btn" data-action="range">${icon('calendar')} ${esc(state.range)} ${icon('down', 11)}</button>`) + devnetBanner() + `<section class="brand-banner"><div class="brand-banner-copy"><div class="brand-kicker"><span class="brand-live"></span> VECTRA / SOLANA TREASURY OPERATIONS</div><h2>Treasury, in motion.</h2><p>Treasury operations at the speed of Solana.</p><div class="brand-principles"><span>01 <b>Plan.</b></span><span>02 <b>Approve.</b></span><span>03 <b>Move.</b></span></div></div><div class="brand-orbit" aria-hidden="true"><svg viewBox="0 0 380 180"><defs><linearGradient id="routeGlow"><stop stop-color="#174f3e"/><stop offset="1" stop-color="#b7f59a"/></linearGradient></defs><path d="M-10 145H95L164 36h90l65 108h75 M-10 165H106L175 56h68l65 108h86 M-10 125H84L153 16h112l65 108h64" stroke="url(#routeGlow)" stroke-width="1.2" fill="none"/><circle cx="254" cy="36" r="5" fill="#b7f59a"/><circle cx="95" cy="145" r="4" fill="#a4d6af"/><path d="m225 23 18 31 18-31h-8l-10 17-10-17z" fill="#c9f5d8"/></svg><span>CAPITAL → COORDINATED</span></div></section>${landingIntro()}<div class="summary">${state.walletMode === 'live' ? liveBalanceCard() : demoBalanceCard()}<section class="quick"><div class="card-heading"><h2>Treasury actions</h2><span class="subtle">${state.walletMode === 'live' ? 'DEVNET' : 'PROTOTYPE'}</span></div><div class="quick-grid">${[['Send USDC', 'send', 'send'], ['Schedule', 'calendar', 'schedule'], ['Route funds', 'route', 'route'], ['Approvals', 'shield', 'approvals']].map(([name, glyph, action]) => `<button type="button" data-action="${action}"><span class="action-icon">${icon(glyph, 17)}</span>${name}</button>`).join('')}</div><div class="quick-note">${icon('lock', 11)} Wallet-controlled. Always.</div></section></div><div class="metrics"><div class="metric"><div class="metric-top">Scheduled payouts ${icon('calendar')}</div><div class="metric-value">$42,000 <span>Illustrative</span></div><p>Sample schedules, not live jobs</p></div><div class="metric"><div class="metric-top">Routed volume ${icon('route')}</div><div class="metric-value">$1.2M <span>Sample</span></div><p>Illustrative all-time volume</p></div><div class="metric"><div class="metric-top">Pending approvals ${icon('shield')}</div><div class="metric-value">${state.proposals.filter((item) => item.status === 'Pending approval').length + 2} <span style="color:#a08745;background:#faf5e8">Local demo</span></div><p>Squads is not connected</p></div></div><div class="lower"><section class="panel"><div class="panel-head"><h2>Recent activity</h2><button type="button" class="text-btn" data-page="Activity log">View all activity ${icon('arrow', 13)}</button></div>${txTable()}<div class="table-bottom"><span>Devnet payouts include explorer links. Other rows are illustrative.</span><span>${state.walletMode === 'live' ? 'Devnet tokens have no cash value' : 'Demo rows move no funds'}</span></div></section><section class="panel"><div class="panel-head"><h2>Upcoming distributions</h2>${icon('calendar', 16)}</div>${upcomingDistributions()}<button type="button" class="btn new-schedule" data-action="schedule">${icon('plus', 13)} Create a schedule</button></section></div><div class="bottom-strip"><span>${icon('shield', 15)} <strong>Control at every step.</strong> Plan distributions. Review proposals. Authorize movement.</span><span><i class="dot"></i> Solana Devnet</span></div>`;
 }
 function routing() {
-  return pageHeading('Cross-chain routing', 'One treasury. More possibilities.', '<span class="pill">MultiHopper integration preview</span>') + `<div class="lower"><section class="panel form-panel"><h2>Move USDC across chains</h2><p style="margin-top:8px">Build and review a cross-chain treasury proposal.</p><form id="route-form"><div class="route-visual"><div class="chain"><span class="chain-logo">≋</span>Solana</div>${icon('arrow')}<div class="chain"><span class="chain-logo" style="background:#eeeff6;color:#7a83aa">◆</span><select id="destination" aria-label="Destination chain" style="border:0;background:none"><option>Ethereum</option><option>Base</option><option>Arbitrum</option></select></div></div><div class="field"><label for="route-amount">Amount · USDC</label><input id="route-amount" type="number" min="1" max="206500" step="0.01" placeholder="10,000.00" value="10000" required><small>Demo available balance: 206,500.00 USDC</small></div><div class="field"><label for="route-address">Destination wallet</label><input id="route-address" placeholder="0x…" pattern="0x[a-fA-F0-9]{40}" required><small>Enter a valid EVM address on the selected destination chain.</small></div><div class="notice">Simulation only. MultiHopper API access, supported routes, fees and settlement must be verified before live execution. This demo does not request a live quote or send funds.</div><button class="btn primary" type="submit" style="width:100%">Review simulated route ${icon('arrow')}</button></form></section><section class="panel" style="align-self:start;padding:23px"><h2>A clear path for every transfer</h2><div style="padding:23px 0;line-height:2.1;font-size:12px;color:#7c8b74">1. Get a supported, live quote<br>2. Review total costs and received USDC<br>3. Collect treasury approvals<br>4. Sign with an authorized wallet<br>5. Monitor through settlement</div><div class="notice">Live routing is not configured. No simulated transfer counts as qualifying volume.</div></section></div>`;
+  return pageHeading('Routing preview', 'Devnet demo. Nothing leaves Solana.', '<span class="pill">Not a live route</span>') + `<div class="lower"><section class="panel form-panel"><h2>No route is configured</h2><p style="margin-top:8px">This build does not bridge funds and does not request a quote. Devnet USDC payouts stay on Solana and are signed in your wallet. Devnet tokens have no cash value.</p><div class="notice">Vectra does not hold a treasury key. A routing worker origin is not set on this page.</div></section><section class="panel" style="align-self:start;padding:23px"><h2>What a later route would still require</h2><div style="padding:23px 0;line-height:2.1;font-size:12px;color:#7c8b74">1. A devnet quote you can read<br>2. Costs shown before you sign<br>3. Your wallet, not a key stored here<br>4. A public Solana transfer you can follow</div><div class="notice">Mainnet is locked. This screen does not send USDC.</div></section></div>`;
 }
 function assets() {
   const live = state.walletMode === 'live';
@@ -273,7 +273,7 @@ function render() {
     Overview: overview,
     'Wallets & assets': assets,
     Distributions: distributions,
-    'Cross-chain routing': routing,
+    'Routing preview': routing,
     Approvals: approvals,
     'Activity log': activity,
     Settings: settings,
@@ -490,7 +490,7 @@ async function submitPayment(event, scheduled) {
   const proposal = {
     id: crypto.randomUUID(),
     name,
-    amount: Number(core.formatBaseUnits(total, 6)),
+    amount: core.formatBaseUnits(total, 6),
     status: 'Pending approval',
     type: scheduled ? 'Distribution' : 'Transfer',
     recipients: rows.length,
@@ -605,17 +605,7 @@ function showSendResult(preview, results, failure) {
 }
 function routeReview(event) {
   event.preventDefault();
-  const amount = Number(document.getElementById('route-amount').value);
-  const chain = document.getElementById('destination').value;
-  const address = document.getElementById('route-address').value;
-  modal('Review simulated route', `<p>Solana → ${esc(chain)} · USDC</p><div class="quote-row"><span>Send amount</span><strong>${money(amount)} USDC</strong></div><div class="quote-row"><span>Route fees</span><strong>Not available</strong></div><div class="quote-row"><span>Destination received</span><strong>Requires live quote</strong></div><div class="quote-row"><span>Settlement time</span><strong>Not verified</strong></div><div class="field"><label>Destination wallet</label><small style="word-break:break-all">${esc(address)}</small></div><div class="notice">This is a route preview, not a MultiHopper quote. Supported chains and all costs remain unverified. No transfer will be executed.</div><button type="button" class="btn primary full" id="save-route">Save demo route proposal</button>`);
-  document.getElementById('save-route').onclick = () => {
-    state.proposals.unshift({ id: crypto.randomUUID(), name: 'Solana → ' + chain, amount, status: 'Draft', type: 'Routing' });
-    persistDemo();
-    close();
-    navigate('Approvals');
-    notify('Route draft saved. Live quote required before approval.');
-  };
+  notify('Routing is a labeled preview. It does not send funds.');
 }
 function review(id) {
   const proposal = state.proposals.find((item) => item.id === id) || {
@@ -628,7 +618,7 @@ function review(id) {
   document.getElementById('local-review').onclick = () => {
     if (proposal.type === 'Routing') {
       close();
-      navigate('Cross-chain routing');
+      navigate('Routing preview');
       return;
     }
     if (!proposal.seed) {
@@ -849,7 +839,7 @@ document.addEventListener('click', (event) => {
       else paymentForm(true);
       break;
     case 'route':
-      navigate('Cross-chain routing');
+      navigate('Routing preview');
       break;
     case 'approvals':
       navigate('Approvals');

@@ -170,6 +170,11 @@ export default {
         await stub.prepareDue(now);
       } catch (error) {
         console.log(JSON.stringify({ event: 'cron_wallet_failed', message: String(error && error.message || error) }));
+        try {
+          await directory.register(wallet, now + 60 * 1000);
+        } catch {
+          /* The next cron still sees this wallet if the defer does not land. */
+        }
       }
     }
     console.log(JSON.stringify({ event: 'cron', cron: controller.cron, wallets: wallets.length }));

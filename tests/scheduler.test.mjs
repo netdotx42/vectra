@@ -132,6 +132,43 @@ test('preparing the same due time twice keeps one run', async () => {
   assert.equal(saved.created.length, 0);
 });
 
+test('a prepared row left behind is finished once and not duplicated', async () => {
+  const now = Date.parse('2026-04-06T12:00:00.000Z');
+  const due = '2026-04-06T12:00:00.000Z';
+  const schedule = {
+    id: 'sched-stuck',
+    name: 'Payroll',
+    frequency: 'weekly',
+    timezone: 'UTC',
+    weekday: 1,
+    hour: 12,
+    minute: 0,
+    recipients: [{ address: DONATION, amount: '1' }],
+    memo: '',
+    status: 'active',
+    graceMs: DAY,
+    nextDueAt: due,
+  };
+  const store = memory();
+  const id = await deterministicRunId('sched-stuck', due);
+  store.runs.set(id, {
+    id,
+    scheduleId: 'sched-stuck',
+    name: 'Payroll',
+    dueAt: due,
+    status: 'prepared',
+    recipients: schedule.recipients,
+    graceMs: DAY,
+  });
+  const first = await advanceSchedule(schedule, now, store);
+  const second = await advanceSchedule(first.schedule, now, store);
+  assert.equal(first.created.length, 1);
+  assert.equal(first.created[0].status, 'awaiting_signature');
+  assert.equal(second.created.length, 0);
+  assert.equal(store.runs.size, 1);
+  assert.equal([...store.runs.values()][0].status, 'awaiting_signature');
+});
+
 test('a due time outside the grace period expires and is not sent', async () => {
   const now = Date.parse('2026-04-10T12:00:00.000Z');
   const schedule = {
@@ -236,6 +273,10 @@ test('schedule input rejects mainnet, bad amounts, and private webhooks', () => 
   const ok = validateSchedule(base, now, DAY);
   assert.equal(ok.ok, true);
   assert.equal(ok.schedule.recipients[0].amount, '1.25');
+  assert.equal(validateSchedule({ ...base, recipients: [{ address: DONATION, amount: '1.0' }] }, now, DAY).schedule.recipients[0].amount, '1');
+  assert.equal(validateSchedule({ ...base, recipients: [{ address: DONATION, amount: '10.000' }] }, now, DAY).schedule.recipients[0].amount, '10');
+  assert.equal(webhookUrl('https://127.1/hook').ok, false);
+  assert.equal(webhookUrl('https://0x7f000001/hook').ok, false);
   assert.equal(ok.schedule.network, 'devnet');
   assert.equal(validateSchedule({ ...base, network: 'mainnet' }, now, DAY).ok, false);
   assert.equal(validateSchedule({ ...base, recipients: [{ address: DONATION, amount: '1.0000001' }] }, now, DAY).ok, false);

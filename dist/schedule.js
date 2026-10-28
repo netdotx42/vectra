@@ -2,6 +2,7 @@ globalThis.VectraSchedule = (function () {
   const core = () => globalThis.VectraCore;
   const app = () => globalThis.VectraApp;
   const SESSION_KEY = 'vectra-scheduler-session';
+  const PROGRESS_KEY = 'vectra-scheduler-progress';
   let cache = {
     at: 0,
     loading: false,
@@ -54,6 +55,29 @@ globalThis.VectraSchedule = (function () {
 
   function clearSession() {
     sessionStorage.removeItem(SESSION_KEY);
+  }
+
+  function readProgress(runId) {
+    try {
+      const all = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}');
+      return Array.isArray(all[runId]) ? all[runId] : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function writeProgress(runId, results) {
+    let all = {};
+    try { all = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}'); } catch { all = {}; }
+    all[runId] = results;
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(all));
+  }
+
+  function clearProgress(runId) {
+    let all = {};
+    try { all = JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}'); } catch { all = {}; }
+    delete all[runId];
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(all));
   }
 
   async function api(path, options) {
@@ -128,8 +152,12 @@ globalThis.VectraSchedule = (function () {
 
   function runLine(item) {
     const amounts = (item.recipients || []).map((row) => esc(row.amount) + ' USDC to ' + esc(row.address)).join('<br>');
-    const actions = item.status === 'awaiting_signature'
-      ? `<button type="button" class="btn primary" data-schedule-action="review-run" data-id="${esc(item.id)}">Review and sign</button><button type="button" class="btn" data-schedule-action="skip-run" data-id="${esc(item.id)}">Skip</button>`
+    const open = item.status === 'awaiting_signature' || item.status === 'signed';
+    const skip = item.status === 'awaiting_signature'
+      ? `<button type="button" class="btn" data-schedule-action="skip-run" data-id="${esc(item.id)}">Skip</button>`
+      : '';
+    const actions = open
+      ? `<button type="button" class="btn primary" data-schedule-action="review-run" data-id="${esc(item.id)}">${item.status === 'signed' ? 'Continue signing' : 'Review and sign'}</button>${skip}`
       : '';
     const signatures = (item.signatures || []).length ? `<small>Signatures recorded: ${(item.signatures || []).map((value) => esc(value)).join(', ')}</small>` : '';
     return `<div class="run-card"><div class="run-top"><div><strong>${esc(item.name)}</strong><small>Due ${esc(item.dueAt)} · devnet · nothing sends until you sign</small><div>${amounts}</div>${signatures}</div><span class="status ${item.status === 'awaiting_signature' ? 'pending' : ''}">${esc(item.status)}</span></div><div class="run-actions">${actions}</div></div>`;
@@ -145,7 +173,7 @@ globalThis.VectraSchedule = (function () {
         + banner
         + `<section class="panel" style="padding:22px"><h2>Sign in to scheduled payouts</h2><p>Use Phantom, Solflare, or Backpack. The signature only logs you in. The simulated demo wallet cannot sign in.</p>${cache.error ? `<p class="error">${esc(cache.error)}</p>` : ''}<button type="button" class="btn primary" data-schedule-action="login">Sign in with wallet</button></section>`;
     }
-    const due = cache.runs.filter((item) => item.status === 'awaiting_signature');
+    const due = cache.runs.filter((item) => item.status === 'awaiting_signature' || item.status === 'signed');
     const body = cache.loading && !cache.at
       ? '<p class="scheduler-empty">Loading schedules…</p>'
       : `<section class="panel"><div class="panel-head"><h2>Due runs</h2><span class="pill">${due.length} waiting for a signature</span></div>${due.length ? due.map(runLine).join('') : '<div class="run-card scheduler-empty">No payout is waiting. A due schedule appears here. It stays unsigned until you approve it.</div>'}</section><section class="panel"><div class="panel-head"><h2>Schedules</h2><span class="pill">${cache.schedules.length} on the scheduler</span></div>${cache.schedules.length ? cache.schedules.map(scheduleLine).join('') : '<div class="run-card scheduler-empty">No remote schedules yet.</div>'}</section>`;
@@ -159,7 +187,7 @@ globalThis.VectraSchedule = (function () {
 
   function upcomingHtml() {
     refresh(false);
-    const due = cache.runs.filter((item) => item.status === 'awaiting_signature').slice(0, 3);
+    const due = cache.runs.filter((item) => item.status === 'awaiting_signature' || item.status === 'signed').slice(0, 3);
     if (!session()) return '<div class="schedule-item"><div class="schedule-title">Scheduler sign-in<small>Open Distributions and sign in with your wallet</small></div></div>';
     if (!due.length) return '<div class="schedule-item"><div class="schedule-title">No payout is waiting on a signature<small>Remote schedules do not send by themselves</small></div></div>';
     return due.map((item) => `<div class="schedule-item"><div class="schedule-line"><div class="schedule-title">${esc(item.name)}<small>${esc(item.status)} · devnet USDC</small></div></div><div class="schedule-date"><span>${esc(item.dueAt)}</span></div></div>`).join('');
@@ -325,9 +353,11 @@ globalThis.VectraSchedule = (function () {
     app().state.sending = true;
     const button = document.querySelector('[data-schedule-action="confirm-sign"]');
     if (button) button.disabled = true;
-    const results = [];
+    const results = readProgress(run.id);
     try {
       for (let index = 0; index < preview.batches.length; index++) {
+        const prior = results[index];
+        if (prior && prior.status === 'confirmed' && prior.signature) continue;
         if (button) button.textContent = 'Approve ' + (index + 1) + ' of ' + preview.batches.length + ' in your wallet…';
         const batch = preview.batches[index];
         const block = await VectraChain.latestBlockhash();
@@ -338,48 +368,49 @@ globalThis.VectraSchedule = (function () {
         let signature = signed.signature;
         let status = 'signed';
         if (signed.mode === 'signed') signature = await VectraChain.sendRaw(signed.raw);
-        try {
-          await VectraChain.confirm(signature, block.lastValidBlockHeight);
-          status = 'confirmed';
-        } catch (failure) {
-          status = failure.timeout ? 'submitted' : 'failed';
-          results.push({
-            signature,
-            status,
-            recipients: batch.transfers.map((row) => ({ address: row.address, amount: row.display })),
-            amountDisplay: batch.amountDisplay,
-          });
-          throw failure;
-        }
-        results.push({
+        const row = {
           signature,
           status,
-          recipients: batch.transfers.map((row) => ({ address: row.address, amount: row.display })),
+          recipients: batch.transfers.map((entry) => ({ address: entry.address, amount: entry.display })),
           amountDisplay: batch.amountDisplay,
-        });
+        };
+        try {
+          await VectraChain.confirm(signature, block.lastValidBlockHeight);
+          row.status = 'confirmed';
+        } catch (failure) {
+          row.status = failure.timeout ? 'submitted' : 'failed';
+          results[index] = row;
+          writeProgress(run.id, results);
+          throw failure;
+        }
+        results[index] = row;
+        writeProgress(run.id, results);
       }
-      const signatures = results.map((result) => result.signature).filter(Boolean);
+      const signatures = results.map((result) => result && result.signature).filter(Boolean);
       const recorded = await api('/v1/runs/' + run.id + '/signature', {
         method: 'POST',
         body: { signatures, status: results.every((result) => result.status === 'confirmed') ? 'sent' : 'signed' },
       });
-      app().recordResults(preview, results);
+      app().recordResults(preview, results.filter(Boolean));
+      clearProgress(run.id);
       pending = null;
       await load();
       app().showSendResult(preview, results, '');
       app().notify('Signature recorded on the run ' + recorded.run.status + '.');
     } catch (failure) {
-      if (results.length) {
+      const landed = results.filter((result) => result && result.signature);
+      if (landed.length && run.status === 'awaiting_signature') {
         try {
           await api('/v1/runs/' + run.id + '/signature', {
             method: 'POST',
-            body: { signatures: results.map((result) => result.signature).filter(Boolean), status: 'signed' },
+            body: { signatures: landed.map((result) => result.signature), status: 'signed' },
           });
-        } catch { /* The run stays awaiting if this record fails. */ }
-        app().recordResults(preview, results);
+          await load();
+        } catch { /* Local progress still skips batches that already confirmed. */ }
       }
+      if (landed.length) app().recordResults(preview, landed);
       const message = app().explain(failure);
-      if (results.length) app().showSendResult(preview, results, message);
+      if (landed.length) app().showSendResult(preview, landed, message);
       else if (errorBox) errorBox.textContent = message;
       else app().notify(message);
     } finally {

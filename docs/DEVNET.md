@@ -82,7 +82,7 @@ Payouts that do not fit in Solana's 1232-byte packet, or that would pass four re
 - Mainnet sends, mainnet balances, and mainnet donations are not implemented.
 - One connected wallet signs. Squads and other multisig policies are not connected. The approvals screen is still a local demo.
 - With `SCHEDULER_API_URL` empty, schedules stay in this browser and never fire. A deployed scheduler can prepare due runs; the wallet still has to sign. See [SCHEDULING.md](SCHEDULING.md).
-- Cross-chain routing is a simulation. It is not a MultiHopper quote.
+- The routing screen is a labeled demo. It does not send funds and it is not a quote.
 - History is `localStorage` on one browser, capped at 100 payouts. Clearing it does not cancel a transaction.
 - The public devnet RPC can be slow, stale, or rate-limited. There is no private RPC and no API key.
 - Only Phantom, Solflare, and Backpack are offered. The wallet must be willing to sign `solana:devnet`.

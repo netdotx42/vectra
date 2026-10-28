@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- When SCHEDULER_API_URL is a deployed Worker, add that https origin to connect-src. -->
+<!-- Scheduler origin is allowlisted. The routing proxy is not deployed; do not add a routing host here until that origin exists. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; form-action 'none'; object-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://api.devnet.solana.com https://vectra-scheduler.vectra-ops.workers.dev http://127.0.0.1:8787 http://localhost:8787">
 <title>VECTRA — Treasury, in motion.</title>
 <meta name="theme-color" content="#082d23">

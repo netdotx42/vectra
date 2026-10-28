@@ -45,7 +45,6 @@ export async function advanceSchedule(schedule, nowMs, hooks) {
     let run = await hooks.getRun(id);
     if (!run) {
       run = makeRun(schedule, id, dueAt);
-      await hooks.putRun(run);
       await hooks.audit({
         runId: id,
         scheduleId: schedule.id,
@@ -54,6 +53,8 @@ export async function advanceSchedule(schedule, nowMs, hooks) {
         actor: 'scheduler',
         note: 'prepared for wallet signature',
       });
+    }
+    if (run.status === 'prepared') {
       const expired = nowMs > cursor + grace;
       const to = expired ? 'expired' : 'awaiting_signature';
       const moved = assertTransition('prepared', to);
