@@ -50,8 +50,8 @@ Early success should be measured through proposal preparation time, approval tur
 
 ## Current status and next milestones
 
-VECTRA currently has an interactive demo with illustrative balances, browser-local proposals, and simulated routing previews. Live wallet balances, transaction signing, Squads approvals, and MultiHopper execution are not yet connected.
+VECTRA Lite can connect Phantom, Solflare, or Backpack, read devnet SOL and devnet USDC, and ask that wallet to sign a simulated-then-sent USDC payout. Mainnet is locked. Schedules, Squads approvals, and MultiHopper routing are still local previews. Devnet tokens have no cash value. See `docs/DEVNET.md`.
 
-The next milestones are a signed Devnet distribution, durable scheduling and audit records, an approval-to-settlement workflow, and a verified supported cross-chain route.
+The next milestones are durable scheduling and audit records, an approval-to-settlement workflow, and a verified supported cross-chain route.
 
 **VECTRA's ambition is to make treasury movement easier to coordinate, authorize, and verify, while keeping authority with the team responsible for the funds.**

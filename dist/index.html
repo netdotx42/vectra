@@ -1,1 +1,23 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>VECTRA — Treasury, in motion.</title><meta name="theme-color" content="#082d23"><link rel="icon" type="image/svg+xml" href="favicon.svg"><meta name="description" content="VECTRA Treasury. Plan distributions, review approvals and coordinate treasury movement on Solana. Interactive MVP prototype."><link rel="stylesheet" href="style.css"></head><body><div id="app"></div><div id="modal-root"></div><div id="toast" role="status"></div><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'self'; form-action 'none'; object-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; style-src-attr 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://api.devnet.solana.com">
+<title>VECTRA — Treasury, in motion.</title>
+<meta name="theme-color" content="#082d23">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="description" content="VECTRA Treasury. Plan distributions, review devnet USDC payouts, and coordinate treasury movement on Solana. Devnet lite. Mainnet is locked.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app"></div>
+<div id="modal-root"></div>
+<div id="toast" role="status"></div>
+<script src="vendor/solana-web3-1.98.4.js" integrity="sha384-ye8qiqAxTOtTyYBj0tJq857Xn1zjjvRLkbfb67BSECNVI2YzWDXqn7Hb7dCTVflj" crossorigin="anonymous"></script>
+<script src="core.js"></script>
+<script src="chain.js"></script>
+<script src="wallet.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

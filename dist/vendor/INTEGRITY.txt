@@ -1,0 +1,5 @@
+@solana/web3.js@1.98.4
+file: solana-web3-1.98.4.js
+sri: sha384-ye8qiqAxTOtTyYBj0tJq857Xn1zjjvRLkbfb67BSECNVI2YzWDXqn7Hb7dCTVflj
+bytes: 333358
+Built with esbuild from scripts/vendor-solana.mjs. GitHub Pages serves this file as-is.

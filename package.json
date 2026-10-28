@@ -1,0 +1,15 @@
+{
+  "name": "vectra",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.cjs",
+    "test:browser": "node tests/browser.mjs",
+    "vendor": "node scripts/vendor-solana.mjs"
+  },
+  "devDependencies": {
+    "@solana/spl-token": "0.4.15",
+    "@solana/web3.js": "1.98.4",
+    "esbuild": "0.25.11",
+    "puppeteer-core": "24.15.0"
+  }
+}

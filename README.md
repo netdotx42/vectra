@@ -24,33 +24,34 @@ The potential advantage is operational: less coordination per payment cycle, a c
 
 ## Take it for a spin
 
-1. Connect the simulated wallet to explore illustrative balances.
-2. Create a USDC payment proposal with multiple recipients.
-3. Add a one-time, weekly, or monthly demo schedule.
-4. Preview a cross-chain route and save a draft proposal.
-5. Review proposals and export a CSV report.
-6. Open Donate, choose an amount, and copy the USDC payment link.
+1. Connect Phantom, Solflare, or Backpack on Solana devnet, or use the simulated demo wallet. The demo is labeled and cannot sign.
+2. Read devnet SOL and devnet USDC. Those balances have no cash value. Mainnet stays locked.
+3. Review a multi-recipient devnet USDC payout. The page simulates it before your wallet asks for a signature.
+4. Add a one-time, weekly, or monthly demo schedule. Schedules stay in this browser and do not send.
+5. Preview a cross-chain route and save a draft proposal. Routing is still a simulation.
+6. Export a CSV. Devnet rows include the signature and a Solana Explorer link. Demo rows are marked fictional.
+7. Open Donate, choose an amount from $1,999 to $100,000, and copy the devnet USDC payment link.
 
-**This repository contains an interactive prototype.** Balances, historical transactions, and volume are fictional. Wallet connection is simulated. Proposals and schedules are stored in browser localStorage; no scheduler executes them. Local reviews are not signatures. Route previews are not live MultiHopper quotes or completed transfers. Activity records are not a verifiable on-chain audit trail. The donation screen does not spend that illustrative balance.
+**This repository is a devnet lite client, not a mainnet treasury.** Devnet tokens have no cash value. There is no backend and no custom program. The public devnet RPC can rate-limit. Proposals, schedules, and payout history live in browser localStorage; no scheduler executes them. Local reviews are not signatures. Route previews are not live MultiHopper quotes. Squads is not connected. The donation screen does not sign; on devnet it is a test-mode link. Details and faucet steps are in [docs/DEVNET.md](docs/DEVNET.md).
 
 ## Donate
 
 **Donate** is in the header and the sidebar. **Support Vectra** is on the overview. Amounts run from $1,999 to $100,000.
 
-The recipient address is `Efhs2ifAwJKUYcVGXvTj3F8z17pGvDRMSxQrDZzjmizR`. The confirm step shows that address with a copy button and a Solana Pay link (`solana:…?amount=…&spl-token=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v&label=Vectra`). You send USDC (SPL) on Solana from your own wallet. The site never signs, never moves funds, and cannot confirm receipt.
+The recipient address is `Efhs2ifAwJKUYcVGXvTj3F8z17pGvDRMSxQrDZzjmizR`. The confirm step shows that address with a copy button and a Solana Pay link. While mainnet is locked, the link uses the devnet USDC mint `4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU` and is labeled devnet-only test mode. Devnet tokens have no cash value. The dollar bounds are the product limits, not a price for those tokens. The site never signs, never moves funds, and cannot confirm receipt.
 
-If `DONATION_ADDRESS` in `dist/app.js` is empty, or it is not a 32–44 character base58 address, the same screen stays in demo mode. You can confirm an amount and see a simulated success note that says no funds moved. Real donations are enabled once a Solana address is configured. The simulated treasury wallet, balances, and proposals stay labeled as a prototype either way.
+If `DONATION_ADDRESS` in `dist/core.js` is empty, or it is not a 32-byte base58 address, the same screen stays in demo mode. You can confirm an amount and see a simulated success note that says no funds moved. The simulated treasury wallet and illustrative balances stay labeled either way.
 
 ## What works today and what comes next
 
-| Workflow | Current demo | Planned implementation |
+| Workflow | This devnet lite build | Still not in this build |
 | --- | --- | --- |
-| Treasury overview | Illustrative assets, obligations, and activity | Wallet Standard connection and Solana RPC balances |
-| Distributions | Multiple recipients and local proposals | Signed Devnet USDC transfers and settlement tracking |
+| Treasury overview | Devnet SOL and devnet USDC when a wallet is connected. Illustrative charts stay labeled. | Mainnet balances |
+| Distributions | Signed devnet USDC payouts: validation, ATA creation, simulation, batching, explorer links | Mainnet sends and scheduled execution |
 | Scheduling | Browser-local schedule records | Durable jobs that prepare proposals, with duplicate prevention |
-| Approvals | Local proposal review | Squads proposals and authorized wallet signatures |
+| Approvals | Local proposal review | Squads proposals |
 | Routing | Simulated route review | Verified MultiHopper quotes, costs, execution, and status |
-| Records | Sample history and CSV export | Durable audit records, signatures, and Explorer links |
+| Records | localStorage signatures, CSV export, devnet Explorer links | Durable audit records |
 
 ## Built to preserve control
 
@@ -66,7 +67,7 @@ Workspace subscriptions and routing revenue under agreed partner terms are poten
 
 ## Run locally
 
-The current app is plain HTML, CSS, and JavaScript. There is no build step or backend dependency. With Python 3 installed:
+The current app is plain HTML, CSS, and JavaScript. GitHub Pages does not build it. `@solana/web3.js` 1.98.4 is vendored in `dist/vendor/` with a pinned subresource hash. With Python 3 installed:
 
 ```bash
 git clone https://github.com/netdotx42/vectra.git
@@ -74,16 +75,24 @@ cd vectra
 python3 -m http.server 8080 --directory dist
 ```
 
-Open http://localhost:8080. The interface uses Google Fonts when available and falls back to local fonts. Reset local proposals and schedules from Settings.
+Open http://localhost:8080. The interface uses Google Fonts when available and falls back to local fonts. Reset local proposals and schedules from Settings. Payout signatures are cleared separately.
 
 GitHub Pages publishes `dist/` from `.github/workflows/pages.yml` on every push to `main`. Links to CSS, scripts, and icons are relative, so the same files load at `https://netdotx42.github.io/vectra/` and at a domain root.
+
+```bash
+npm test
+```
+
+That runs the Node checks for addresses, amounts, CSV rows, batching, and instruction bytes. It does not need a wallet.
 
 ## Project layout
 
 ```text
 dist/                 Editable static app and brand assets
+dist/vendor/          Pinned @solana/web3.js browser build and its license
 dist/.nojekyll        Skips Jekyll so Pages serves the files as they are
 dist/404.html         Sends unknown Pages paths back to the demo
+docs/DEVNET.md        Devnet setup, faucets, and limitations
 docs/LITEPAPER.md     Product thesis and proposed architecture
 DESCRIPTION.txt       Copy-ready 344-character description
 wrangler.jsonc        Cloudflare Workers static asset configuration

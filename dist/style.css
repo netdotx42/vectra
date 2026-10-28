@@ -60,7 +60,18 @@
   .heading-actions .btn:first-child{display:inline-flex}
   .landing-row{grid-template-columns:1fr}
 }
+button.network{background:none;border:0;padding:0;font:inherit;color:#64776d}
+button:disabled,.btn:disabled{opacity:.55;cursor:not-allowed}
+.devnet-banner{display:flex;gap:8px;align-items:flex-start;background:#f8f4e8;border:1px solid #ead9ae;color:#6d5a32;border-radius:8px;padding:10px 12px;margin:0 0 16px;font-size:12px;line-height:1.45}
+.devnet-banner strong{color:#4e3f22}
+.balance-actions{margin-top:14px}
+.faucet-links{display:flex;flex-wrap:wrap;gap:12px;margin:10px 0 0}
+.faucet-links a{color:#185d3d;font-size:12px;font-weight:650}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;word-break:break-all}
+.quote-row span small{display:block;color:#8a7040;margin-top:4px}
+#wallet-list{display:flex;flex-direction:column;gap:8px}
 @media(max-width:650px){
+  .header-actions .network{display:inline-flex}
   .page-heading{flex-direction:column;align-items:flex-start;gap:12px}
   .page-heading .heading-actions{display:flex;flex-wrap:wrap}
   .header-actions .icon-btn{display:inline-flex}
